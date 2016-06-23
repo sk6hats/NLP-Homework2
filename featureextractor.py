@@ -103,5 +103,6 @@ class FeatureExtractor(object):
                 result.append('BUF_0_LDEP_' + dep_left_most)
             if FeatureExtractor._check_informative(dep_right_most):
                 result.append('BUF_0_RDEP_' + dep_right_most)
-
+                
+#        print "FEATURE_EXTRACT: ", result
         return result

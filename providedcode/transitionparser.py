@@ -274,6 +274,7 @@ class TransitionParser(object):
                         except ValueError:
                             baseTransition = strTransition
 
+                        #print "PARSE:", baseTransition,  conf
                         if baseTransition == self.transitions.LEFT_ARC:
                             if self.transitions.left_arc(conf, relation) != -1:
                                 break
@@ -302,6 +303,8 @@ class TransitionParser(object):
                 c_node['head'] = head
                 c_node['rel'] = rel
             result.append(new_depgraph)
+#            print "XXXXXXX EXITING XXXXXX"
+#            break
 
         return result
 
