@@ -78,6 +78,20 @@ class FeatureExtractor(object):
                 for feat in feats:
                     result.append('STK_0_FEATS_' + feat)
 
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('STK_0_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('STK_0_TAG_' + token['tag'])
+
+        if len(stack) > 1:
+            stack_idx0 = stack[-2]
+            token = tokens[stack_idx0]
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('STK_1_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('STK_1_TAG_' + token['tag'])
+
+
             # Left most, right most dependency of stack[0]
             dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(stack_idx0, arcs)
 
@@ -96,6 +110,37 @@ class FeatureExtractor(object):
                 feats = token['feats'].split("|")
                 for feat in feats:
                     result.append('BUF_0_FEATS_' + feat)
+
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('BUF_0_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('BUF_0_TAG_' + token['tag'])
+
+        if len(buffer) > 1:
+            buffer_idx1 = buffer[1]
+            token = tokens[buffer_idx1]
+            if FeatureExtractor._check_informative(token['word'], True):
+                result.append('BUF_1_FORM_' + token['word'])
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('BUF_1_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('BUF_1_TAG_' + token['tag'])
+
+        if len(buffer) > 2:
+            buffer_idx2 = buffer[2]
+            token = tokens[buffer_idx2]
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('BUF_2_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('BUF_2_TAG_' + token['tag'])
+
+        if len(buffer) > 3:
+            buffer_idx3 = buffer[3]
+            token = tokens[buffer_idx3]
+            if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
+                result.append('BUF_3_CTAG_' + token['ctag'])
+            if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
+                result.append('BUF_3_TAG_' + token['tag'])
 
             dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(buffer_idx0, arcs)
 
