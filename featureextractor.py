@@ -38,6 +38,46 @@ class FeatureExtractor(object):
         return dep_left_most, dep_right_most
 
     @staticmethod
+    def find_num_left_right_dependencies(idx, arcs):
+        n_left = 0
+        n_right = 0
+        left_most = 1000000
+        right_most = -1
+        for (wi, r, wj) in arcs:
+            if wi == idx:
+                if (wj > wi) and (wj > right_most):
+                    n_left += 1
+                    right_most = wj
+                if (wj < wi) and (wj < left_most):
+                    n_right += 1
+                    left_most = wj
+        str_left = ''
+        if n_left > 0:
+            str_left = str(n_left)
+        str_right = ''
+        if n_right > 0:
+            str_right = str(n_right)
+        return str_left, str_right
+
+
+    @staticmethod
+    def find_immediate_left_right_dependencies(idx, arcs):
+        left_most = 1000000
+        right_most = -1
+        dep_left_most = ''
+        dep_right_most = ''
+        for (wi, r, wj) in arcs:
+            if wi == idx:
+                if (wj > wi) and (right_most == -1 or wj < right_most):
+                    right_most = wj
+                    dep_right_most = r
+                if (wj < wi) and (left_most == 1000000 or wj > left_most):
+                    left_most = wj
+                    dep_left_most = r
+        return dep_left_most, dep_right_most
+
+
+    @staticmethod
     def extract_features(tokens, buffer, stack, arcs):
         """
         This function returns a list of string features for the classifier
@@ -83,22 +123,39 @@ class FeatureExtractor(object):
             if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
                 result.append('STK_0_TAG_' + token['tag'])
 
+            # Left most, right most dependency of stack[0]
+            dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(stack_idx0, arcs)
+            #print "LEFT-RIGHT",  str(dep_left_most),  str(dep_right_most)
+            if FeatureExtractor._check_informative(dep_left_most):
+                result.append('STK_0_LDEP_' + dep_left_most)
+            if FeatureExtractor._check_informative(dep_right_most):
+                result.append('STK_0_RDEP_' + dep_right_most)
+
+            # dep_left_most, dep_right_most = FeatureExtractor.find_num_left_right_dependencies(stack_idx0, arcs)
+            # print "LEFT-RIGHT",  str(dep_left_most),  str(dep_right_most)
+            # if FeatureExtractor._check_informative(dep_left_most):
+            #     result.append('STK_0_LDEPNUM_' + dep_left_most)
+            # if FeatureExtractor._check_informative(dep_right_most):
+            #     result.append('STK_0_RDEPNUM_' + dep_right_most)
+
+
+            # dep_left_most, dep_right_most = FeatureExtractor.find_immediate_left_right_dependencies(stack_idx0, arcs)
+            # print "LEFT-RIGHT",  str(dep_left_most),  str(dep_right_most)
+            # if FeatureExtractor._check_informative(dep_left_most):
+            #     result.append('STK_0_LIDEP_' + dep_left_most)
+            # if FeatureExtractor._check_informative(dep_right_most):
+            #     result.append('STK_0_RIDEP_' + dep_right_most)
+
+
         if len(stack) > 1:
-            stack_idx0 = stack[-2]
-            token = tokens[stack_idx0]
+            stack_idx1 = stack[-2]
+            token = tokens[stack_idx1]
             if 'ctag' in token and FeatureExtractor._check_informative(token['ctag'], True):
                 result.append('STK_1_CTAG_' + token['ctag'])
             if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
                 result.append('STK_1_TAG_' + token['tag'])
 
 
-            # Left most, right most dependency of stack[0]
-            dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(stack_idx0, arcs)
-
-            if FeatureExtractor._check_informative(dep_left_most):
-                result.append('STK_0_LDEP_' + dep_left_most)
-            if FeatureExtractor._check_informative(dep_right_most):
-                result.append('STK_0_RDEP_' + dep_right_most)
 
         if buffer:
             buffer_idx0 = buffer[0]
@@ -115,6 +172,25 @@ class FeatureExtractor(object):
                 result.append('BUF_0_CTAG_' + token['ctag'])
             if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
                 result.append('BUF_0_TAG_' + token['tag'])
+
+            dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(buffer_idx0, arcs)
+            if FeatureExtractor._check_informative(dep_left_most):
+                result.append('BUF_0_LDEP_' + dep_left_most)
+            if FeatureExtractor._check_informative(dep_right_most):
+                result.append('BUF_0_RDEP_' + dep_right_most)
+
+            # dep_left_most, dep_right_most = FeatureExtractor.find_immediate_left_right_dependencies(buffer_idx0, arcs)
+            # if FeatureExtractor._check_informative(dep_left_most):
+            #     result.append('BUF_0_LIDEP_' + dep_left_most)
+            # if FeatureExtractor._check_informative(dep_right_most):
+            #     result.append('BUF_0_RIDEP_' + dep_right_most)
+
+            # dep_left_most, dep_right_most = FeatureExtractor.find_num_left_right_dependencies(buffer_idx0, arcs)
+            # if FeatureExtractor._check_informative(dep_left_most):
+            #     result.append('BUF_0_LDEPNUM_' + dep_left_most)
+            # if FeatureExtractor._check_informative(dep_right_most):
+            #     result.append('BUF_0_RDEPNUM_' + dep_right_most)
+
 
         if len(buffer) > 1:
             buffer_idx1 = buffer[1]
@@ -142,12 +218,5 @@ class FeatureExtractor(object):
             if 'tag' in token and FeatureExtractor._check_informative(token['tag'], True):
                 result.append('BUF_3_TAG_' + token['tag'])
 
-            dep_left_most, dep_right_most = FeatureExtractor.find_left_right_dependencies(buffer_idx0, arcs)
-
-            if FeatureExtractor._check_informative(dep_left_most):
-                result.append('BUF_0_LDEP_' + dep_left_most)
-            if FeatureExtractor._check_informative(dep_right_most):
-                result.append('BUF_0_RDEP_' + dep_right_most)
-                
 #        print "FEATURE_EXTRACT: ", result
         return result
