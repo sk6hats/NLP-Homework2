@@ -21,17 +21,18 @@ class Transition(object):
         if not conf.buffer or not conf.stack:
             return -1
 
+        # i=top of stack, j=first word in buffer
         idx_wi = conf.stack[-1]
         idx_wj = conf.buffer[0]
 
-        # preconditions
+        # preconditions - no root & no arc exists with tail 'i'
         if idx_wi == 0:
             return -1
         for arc in conf.arcs:
             if arc[2] == idx_wi:
                 return -1
 
-        # pop stack & add reverse-arrow
+        # pop 'i' from stack & add reverse-ark
         conf.stack.pop()
         conf.arcs.append((idx_wj, relation, idx_wi))
 
@@ -61,16 +62,18 @@ class Transition(object):
         if not conf.stack:
             return -1
 
+        # i: top of stack
         idx_wi = conf.stack[-1]
 
-        # preconditions
+        # preconditions: atleast one ark where tail is 'i'
         found = False
         for arc in conf.arcs:
             if arc[2] == idx_wi:
                 found = True
         if found == False:
             return -1
-        
+
+        # remove 'i' from stack
         conf.stack.pop()
 
 
@@ -83,6 +86,7 @@ class Transition(object):
         if not conf.buffer or not conf.stack:
             return -1
 
+        # i: first word in buffer, remove if from buffer & push on top of stack
         idx_wi = conf.buffer.pop(0)
         conf.stack.append(idx_wi)
 

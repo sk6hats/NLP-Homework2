@@ -9,11 +9,11 @@ import time
 if __name__ == '__main__':
 
     # flags
-    F_TEST_BADMODEL = False
+    F_TEST_BADMODEL = True
     F_TRAIN_SWEDISH = True
     F_TRAIN_ENGLISH = True
     F_TRAIN_DANISH  = True
-    F_TRAIN_KOREAN  = True
+    F_TRAIN_KOREAN  = False
 
     #traindata = dataset.get_swedish_train_corpus().parsed_sents()
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
                     f.write(p.to_conll(10).encode('utf-8'))
                     f.write('\n')
 
-            print time.ctime(), "DONE BADMODEL", modelfile, conllfile
+            print time.ctime(), "-------DONE----- BADMODEL", modelfile, conllfile
 
         if F_TRAIN_SWEDISH == True:
             print time.ctime(), "START TRAIN SWEDISH"
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 for p in parsed:
                     f.write(p.to_conll(10).encode('utf-8'))
                     f.write('\n')
-            print time.ctime(), "DONE TESTING SWEDISH ", modelfile, conllfile
+            print time.ctime(), "-------DONE----- TESTING SWEDISH ", modelfile, conllfile
 
         if F_TRAIN_ENGLISH == True:
             print time.ctime(), "START TRAIN english"
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 for p in parsed:
                     f.write(p.to_conll(10).encode('utf-8'))
                     f.write('\n')
-            print time.ctime(), "DONE TESTING english ", modelfile, conllfile
+            print time.ctime(), "-------DONE----- TESTING english ", modelfile, conllfile
 
         if F_TRAIN_DANISH == True:
             print time.ctime(), "START TRAIN danish"
@@ -116,7 +116,7 @@ if __name__ == '__main__':
                 for p in parsed:
                     f.write(p.to_conll(10).encode('utf-8'))
                     f.write('\n')
-            print time.ctime(), "DONE TESTING danish ", modelfile, conllfile
+            print time.ctime(), "-------DONE----- TESTING danish ", modelfile, conllfile
 
 
         if F_TRAIN_KOREAN == True:
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                 for p in parsed:
                     f.write(p.to_conll(10).encode('utf-8'))
                     f.write('\n')
-            print time.ctime(), "DONE TESTING korean ", modelfile, conllfile
+            print time.ctime(), "-------DONE----- TESTING korean ", modelfile, conllfile
 
 
 
