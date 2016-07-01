@@ -37,6 +37,27 @@ of Ark1. Thus this is non-projective.
 UAS: 0.279305354559
 LAS: 0.178726483357
 
+BadFeatures.model tested on _SWEDISH_ dataset produces:
+1325 shifts, 584 reduces, 507 left-arcs, 236 right-arcs.
+Trained-swedish.model (LAS 0.7) comparatively produces:
+650 shifts, 773 reduces, 613 left-arcs, 911 right-arcs.
+
+BadFeatures.model tested on _ENGLISH_ dataset produces:
+2114 shifts, 362 reduces, 0 left-arcs, 222 right-arcs
+Trained-english.model (LAS 0.75) comparatively prodices:
+1158 shifts, 1098 reduces, 1123 left-arcs, 1178 right-arcs
+
+Clearly, it seems that badfeatures.model is ill-classifying most of
+the actions. Its also clear that its producing lot more SHIFTs and
+few LEFT/RIGHT-arcs thus indicating buffer probably gets empty much
+while stack has lot of elements - thus reducing number of arcs
+(since arcs can only be between top-of-stack and first-in-buffer).
+
+Despite adding/altering features, the LAS of BadFeatures does not
+change - which might indicate it uses different method/features
+entirely to make the predictions. It also produces LAS of ZERO for
+non-Swedish languages. Thus indicating, it was trained for Swedish.
+
 ===================================================================
 
 3A:
