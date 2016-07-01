@@ -26,7 +26,7 @@ Non-Projective:
 British voters passed the Brexit referendum last week which is
 a non-binding motion.
 
-Ark1: passed -> week        Ark2: referendum -> is
+Arc1: passed -> week        Arc2: referendum -> is
 These two arks intersect each other. Also EXACTLY-ONE node
 'referendum' of Ark2 falls within head ('passed') and tail ('week')
 of Ark1. Thus this is non-projective.
@@ -40,21 +40,74 @@ LAS: 0.178726483357
 ===================================================================
 
 3A:
+For the starters, provided code only used top of stack (STK0) &
+first word in buffer (BUF0) for features. The model received <.3 LAS
+for English & Swedish. Danish LAS was .56 mostly due to 'feats'.
+During n-gram exercise in previous Homework, we learnt that adding
+more context ('n' adjacent words), increases accuracy in POS/grammar.
+That principle should also work for arc-eager by looking beyond just
+top of stack & second-third word in buffer.
 
+Thus, it was found that by adding STK0_TAG, BUF0_TAG & BUF1_TAG was
+had biggest impact on LAS (close to 0.7 for all languages).
+Individually each of these features have .1 to .2 improvement to LAS
+but as a combination, LAS improves significantly. These three features
+add very small number of additional features (<100) that helps the
+training speed and process memory. Thus, these seem to be most
+efficient set of features for gain in accuracy Vs speed/memory cost.
+
+STK0_TAG feature individually improved English & Swedish LAS by 15%
+and Danish LAS by 9%. And thus simply guessing dependency based on
+tag of the current word seems not too accurate just as humans can not
+accurately predict such dependency without reading rest of sentence.
+e.g. given current word is 'eating', rest of sentence could be
+'eating pizza', 'eating with a fork' or 'eating with a friend'.
+
+BUF0_TAG feature alone improved English LAS by .4 although Danish &
+Swedish LAS improved by <.1. Intuitively, this means knowing tag of
+next word, we can most often predict current word tag. e.g. if next
+word is -ing verb, most often current word would be is/was.
+Interestingly, the difference of impact on LAS of English versus on
+that of Danish & Swedish can be attributed to rigid/predictive
+word-ordering in English sentences than that of other languages.
+
+BUF1_TAG feature alone only marginally (<.1) improved LAS for all
+three languages. This also matches human intention that we almost
+never can predict second-next word without knowing current or next
+word. Yet, the relevance of this feature is to combine with above
+two features to produce added context/tag-sequence for added accuracy
+(similar to tri-grams Vs bi-grams/unigrams).
+
+Other observations about features tried:
+* STK0_FORM & BUF0_FORM also improve LAS close significantly for all
+  languages but have downside of too-many additional features slowing
+  training and could 'overfit' classifier in case of blind dataset.
+* Arc-eager design of stack/buffer seem to predict all child/dependent
+  dependencies before finding head of current STK0/BUF0. e.g. it will
+  detect "with->fork" OR "with->friend" before "eat->with". That thought
+  indicates knowing dependents of STK0/BUF0 will help predict STK0<->BUF0
+  dependency as seen by sequence (STK0, BUF0, BUF1).
+* Coarse tags CTAG seem to achieve same results as TAG but provided
+  code from_sentence() ignores CTAG.
+* Removing left-right dependent address functions had much lesser impact
+  on LAS for all three language - indicating some relation, however small,
+  on dependent arcs already discovered.
+* Number of elements in Stack and remaining words in buffer had little
+  positive impact on LAS.
 ===================================================================
 
 3C:
 English:
-UAS: 0.791687041565
-LAS: 0.750611246944
+UAS: 0.79902200489
+LAS: 0.756968215159
 
 Swedish:
-UAS: 0.798842257598
-LAS: 0.706222865412
+UAS: 0.796671490593
+LAS: 0.700434153401
 
 Danish:
-UAS: 0.795836131632
-LAS: 0.701141705843
+UAS: 0.793149764943
+LAS: 0.700470114171
 
 ===================================================================
 
